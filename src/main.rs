@@ -81,21 +81,21 @@ fn main() {
 
     match mode.as_str() {
         "update-exp" | "update" | "flash" => {
-            crate::commands::run_update_exp(&mut fpm);
+            commands::run_update_exp(&mut fpm);
         }
         "update-net" | "flash-net" | "net-update" => {
-            crate::commands::run_update_net(&mut fpm);
+            commands::run_update_net(&mut fpm);
         }
         "list-exp" | "exp" => {
-            crate::commands::run_list_exp(&mut fpm);
+            commands::run_list_exp(&mut fpm);
         }
         "list-net" | "net" => {
-            crate::commands::run_list_net(&mut fpm);
+            commands::run_list_net(&mut fpm);
         }
         "list" | "all" | _ => {
-            crate::commands::run_list_exp(&mut fpm);
+            commands::run_list_exp(&mut fpm);
             println!();
-            crate::commands::run_list_net(&mut fpm);
+            commands::run_list_net(&mut fpm);
         }
     }
 }

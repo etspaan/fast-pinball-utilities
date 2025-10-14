@@ -51,7 +51,7 @@ fn build_available_firmware_versions() -> HashMap<String, HashMap<String, String
         None => PathBuf::from(""),
     };
 
-    // If directory is missing or empty, trigger a download via check_updates
+    // If the directory is missing or empty, trigger a download via check_updates
     let needs_download = match fs::read_dir(&base) {
         Ok(mut it) => it.next().is_none(),
         Err(_) => true,
