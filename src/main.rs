@@ -59,7 +59,7 @@ fn main() {
         mode.as_str(),
         "get-latest-firmware" | "check-updates" | "download-firmware" | "check"
     ) {
-        match crate::commands::run_check_updates() {
+        match commands::run_check_updates() {
             Ok(_) => std::process::exit(0),
             Err(e) => {
                 eprintln!("Failed to download firmware: {}", e);
