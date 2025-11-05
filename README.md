@@ -27,7 +27,7 @@ Install to your Cargo bin directory:
 
 - `cargo install --path .`
 
-Install directly from GitHub without having to :
+Install directly from GitHub without having to manually clone the repository:
 - `cargo install --git https://github.com/etspaan/fast-pinball-utilities`
 
 After installing, the binary will be available as `fast-pinball-utilities` (or you can run with `cargo run -- <command>` during development).
