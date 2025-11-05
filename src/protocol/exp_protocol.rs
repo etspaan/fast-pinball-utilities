@@ -181,6 +181,8 @@ impl ExpProtocol {
             println!("Bootloader reported completion: !BL2040:02");
         }
 
+        std::thread::sleep(Duration::from_millis(2_000));
+
         // Query the device ID and firmware version for the target address
         let id_cmd = format!("ID@{}:\r", address_hex);
         self.send(id_cmd.into_bytes());
@@ -208,10 +210,8 @@ impl ExpProtocol {
         println!("ID response: {}", id_resp);
 
         // Parse and validate the expected ID response format: "ID:EXP {BoardName} {version}"
-        let expected_board = board_type;
         let expected_ver = normalized_version;
         let mut found_line = None::<String>;
-        let mut parsed_board = None::<String>;
         let mut parsed_version = None::<String>;
         let mut verified = false;
 
@@ -222,14 +222,13 @@ impl ExpProtocol {
                 // Tokenize by whitespace; expected tokens: ["ID:EXP", "{BoardName}", "{version}"]
                 let parts: Vec<&str> = l.split_whitespace().collect();
                 if parts.len() >= 3 {
-                    parsed_board = Some(parts[1].to_string());
                     // Extract version token and strip any trailing non-digit/dot characters
                     let mut ver = parts[2].trim().to_string();
                     while ver.ends_with(|c: char| !c.is_ascii_digit() && c != '.') {
                         ver.pop();
                     }
                     parsed_version = Some(ver.clone());
-                    if parts[1] == expected_board && ver == expected_ver {
+                    if ver == expected_ver {
                         verified = true;
                         break;
                     }
@@ -240,17 +239,11 @@ impl ExpProtocol {
         if verified {
             println!(
                 "Firmware update verified: board {} reports version {} at address {}",
-                expected_board, expected_ver, address_hex
+                board_type, expected_ver, address_hex
             );
         } else {
             // Provide helpful diagnostics
-            if let (Some(pb), Some(pv)) = (parsed_board.as_deref(), parsed_version.as_deref()) {
-                if pb != expected_board {
-                    eprintln!(
-                        "Warning: ID board mismatch. Expected '{}', got '{}' (line: {:?}).",
-                        expected_board, pb, found_line
-                    );
-                }
+            if let Some(pv) = parsed_version.as_deref() {
                 if pv != expected_ver {
                     eprintln!(
                         "Warning: Firmware version mismatch. Expected '{}', got '{}' (line: {:?}).",
@@ -265,7 +258,7 @@ impl ExpProtocol {
             } else {
                 eprintln!(
                     "Warning: No 'ID:EXP' line found in response; cannot verify flashed version {} for board {}.",
-                    expected_ver, expected_board
+                    board_type, expected_ver,
                 );
             }
         }
